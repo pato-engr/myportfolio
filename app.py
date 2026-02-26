@@ -32,9 +32,7 @@ def contact():
         message = request.form.get("message")
 
         # ===== EMAIL CONFIG (GMAIL SMTP) =====
-        # sender_email = "vitalaandrew@gmail.com"      # replace with your email
-        # sender_password = "svhy qoso hbah eskp"      # replace with your Gmail App Password
-        # receiver_email = "vitalaandrew@gmail.com"    # where you want to receive messages
+        
         
         sender_email = os.environ.get("EMAIL_USER")
         sender_password = os.environ.get("EMAIL_PASSWORD")
