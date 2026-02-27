@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import smtplib
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 import os
 
 app = Flask(__name__)
@@ -35,28 +36,23 @@ def contact():
         
         
         sender_email = os.environ.get("EMAIL_USER")
-        sender_password = os.environ.get("EMAIL_PASSWORD")
         receiver_email = os.environ.get("RECEIVER_EMAIL")
-
-        print("EMAIL_USER:", sender_email )
-        print("EMAIL_PASSWORD:", sender_password)   
-        print("RECEIVER_EMAIL:", receiver_email)        
+        api_key = os.environ.get("SENDGRID_API_KEY")
+     
         
-
         subject = "New Portfolio Contact Message"
         body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
-        email_message = f"Subject: {subject}\n\n{body}"
 
+        message = Mail(
+            from_email=sender_email,
+            to_emails=receiver_email,
+            subject=subject,
+            plain_text_content=body,
+    )
         try:
-            with smtplib.SMTP("smtp.gmail.com", 587) as server:
-                server.starttls()
-                server.login(sender_email, sender_password)
-                server.sendmail(sender_email, receiver_email, email_message)
-            # server = smtplib.SMTP("smtp.gmail.com", 587)
-            # server.starttls()
-            # server.login(sender_email, sender_password)
-            # server.sendmail(sender_email, receiver_email, email_message)
-            # server.quit()
+            sg = SendGridAPIClient(api_key)
+            response = sg.send(message)
+            
 
             flash("✅ Message sent successfully! I will reply you shortly.")
         except Exception as e:
