@@ -38,21 +38,30 @@ def contact():
         sender_password = os.environ.get("EMAIL_PASSWORD")
         receiver_email = os.environ.get("RECEIVER_EMAIL")
 
+        print("EMAIL_USER:", sender_email )
+        print("EMAIL_PASSWORD:", sender_password)   
+        print("RECEIVER_EMAIL:", receiver_email)        
+        
+
         subject = "New Portfolio Contact Message"
         body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
         email_message = f"Subject: {subject}\n\n{body}"
 
         try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, receiver_email, email_message)
-            server.quit()
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.sendmail(sender_email, receiver_email, email_message)
+            # server = smtplib.SMTP("smtp.gmail.com", 587)
+            # server.starttls()
+            # server.login(sender_email, sender_password)
+            # server.sendmail(sender_email, receiver_email, email_message)
+            # server.quit()
 
             flash("✅ Message sent successfully! I will reply you shortly.")
         except Exception as e:
             flash("❌ Message failed to send. Please try again later.")
-            print(e)
+            print("ERROR:", e)
 
         return redirect(url_for("contact"))
 
